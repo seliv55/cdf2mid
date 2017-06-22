@@ -123,11 +123,12 @@ BEAS2B=list(cl="BEAS2B",Glucose=c(10.107, 7.489),Glutamine=c(3.809, 3.666),Lacta
 keys=list(t=inctime[2],cel=cells[1],trac=tracer[[1]]$name)
 
 
-First part describes metabolites of interest, which spectra were registered and presented in the given set of CDF files. Metabolite info inclues m/z value for unlabeled isotopomers (M0), retention time, formula of molecules derivated for gas chromatography, location of the analyzed fragment in the parent molecule. name, chebi identification.
+First part describes metabolites of interest, which spectra were registered and presented in the given set of CDF files. Metabolite info includes m/z value for unlabeled isotopomers (M0), retention time, the formula of molecules derivated for gas chromatography, the location of the analyzed fragment in the parent molecule, name, chebi identification.
 Then follows the list tracers used, with positions of labels in the carbon skeleton, and its abundance.
-Then list of time moments where the measurents were performed; then the list of extracellular metabolites (substrates); types of cells analyzed; colcentrations corresponding to the moments of measurements.
+Then a list of time moments where the measurements were performed; then the list of extracellular metabolites (substrates); types of cells analyzed; concentrations corresponding to the moments of measurements.
 
 Based on this information and that extracted from the CDF files presented in the working directory cdf2mid creates tables of data accepted as exchangeable with Metabolights database.
+
 
 - To run this example it is necessary to include "metdata.R" as a sourse:
 
