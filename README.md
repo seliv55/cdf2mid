@@ -49,13 +49,13 @@ cdf2MID reads the CDF files presented in the working directory, and then
 
 ## Installation
 
-- As independent program. RaMID itself does not require installation. Standing in the RaMID directory enter in R environment with the command:
-  
+- As independent program, cdf2mid itself does not require installation.  There are two ways of using it: either creating a library "cdf2mid", or reading source files containing the implemented functions. Standing in the cdf2mid directory:
+
+- 1) Create a library of functions:
+   
 ''' sudo R '''
   
-- 1) Create a library of functions:
-
- '''   library(devtools) '''
+'''   library(devtools) '''
 
  '''   build() '''
        
@@ -67,11 +67,13 @@ cdf2MID reads the CDF files presented in the working directory, and then
 
 - 2) read directly the necessary functions:
   
-''' source("R/cdf2mid.R")'''
+''' R '''
+  
+''' source("R/cdf2mid.R") '''
 
-''' source("R/libcdf.R")'''
+''' source("R/libcdf.R") '''
 
-''' source("R/metdata.R")'''
+''' source("R/metdata.R") '''
 
 ''' library(ncdf4) '''
 

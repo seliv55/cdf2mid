@@ -1,7 +1,5 @@
   library(ncdf4) # library reading cdf
   source("R/libcdf.R")
-#  source("libmidcor/R/lib.R")
-#  source("libmidcor/R/midcor.R")
   source("R/metdata.R")
   
  oldi<-getwd() # 17: "20120719 A549 24h Glucosa C1C2 1_01.CDF" 
