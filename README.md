@@ -76,8 +76,6 @@ cdf2MID reads the CDF files presented in the working directory, and then
  
  source("R/libcdf.R") 
  
- source("R/metdata.R") 
- 
  library(ncdf4)
 ```
 
@@ -87,7 +85,9 @@ cdf2MID reads the CDF files presented in the working directory, and then
 
 - The analysis performed when executing the  command:
 
- ''' metan(outfile, pat) '''
+```
+ metan(outfile, pat)
+```
  
 - here the parameters are the names of an output file with the result (extracted relative intensities for all m/z constituting the peak), and a pattern that  archive containing .CDF files with registration of the injections into the mass spectrometer performed in the course of the given analyzed experiment.
 
@@ -134,16 +134,11 @@ Then a list of time moments where the measurements were performed; then the list
 Based on this information and that extracted from the CDF files presented in the working directory cdf2mid creates tables of data accepted as exchangeable with Metabolights database.
 
 
-- To run this example it is necessary to include "metdata.R" as a sourse:
+- Run this example using the command:
 
 ```
-  source("R/metdata.R")
   metan(outfile="../cdf2midout.csv", pat=".CDF")
 ```
-  
-  and execute the command:
 
- 
-
-The file containing the results provided by cdf2mid (here "ramidin.csv") can be used by RaMID, or directly proceed for further correction by MIDcor.
+The file containing the results provided by cdf2mid (here "cdf2midout.csv") can be used by RaMID, or directly proceed for further correction by MIDcor.
 

@@ -1,11 +1,13 @@
 #  setwd(oldi)
  oldi<-getwd()
 
-metan<-function(outfile="../cdf2midout.csv", pat=".CDF"){ # main function; evaluates MID for a set of CDF files specified by pat
+metan<-function(infile="metdata", outfile="../cdf2midout.csv",cdfdir="wd"){ # main function; evaluates MID for a set of CDF files specified by pat
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
-  setwd("./wd")
+  source(infile)
+  setwd(cdfdir)
   start.time <- Sys.time()
+   pat=".CDF"
    lcdf<-dir(pattern=pat)
 #    fi0=paste("../",cel,lab, sep=""); # file to write Midcor output in PhenoMeNal format
      df0<-data.frame(); # data frame to write Midcor output in PhenoMeNal format
