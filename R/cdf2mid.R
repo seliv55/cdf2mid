@@ -4,6 +4,7 @@
 metan<-function(infile="metdata", outfile="../cdf2midout.csv",cdfdir="wd"){ # main function; evaluates MID for a set of CDF files specified by pat
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
+ print(infile)
   source(infile)
   setwd(cdfdir)
   start.time <- Sys.time()
