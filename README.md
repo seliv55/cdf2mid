@@ -53,29 +53,33 @@ cdf2MID reads the CDF files presented in the working directory, and then
 
 - 1) Create a library of functions:
    
-''' sudo R '''
-  
-'''   library(devtools) '''
+```
+ sudo R
 
- '''   build() '''
-       
- '''   install() '''
-       
- '''   library(cdf2mid) '''
-
- '''   library(ncdf4) '''
+ library(devtools)
+ 
+ build() 
+ 
+ install() 
+ 
+ library(cdf2mid) 
+ 
+ library(ncdf4)
+```
 
 - 2) read directly the necessary functions:
   
-''' R '''
-  
-''' source("R/cdf2mid.R") '''
-
-''' source("R/libcdf.R") '''
-
-''' source("R/metdata.R") '''
-
-''' library(ncdf4) '''
+```
+ R 
+ 
+ source("R/cdf2mid.R") 
+ 
+ source("R/libcdf.R") 
+ 
+ source("R/metdata.R") 
+ 
+ library(ncdf4)
+```
 
 - the directory wd/ should contain the .cdf files that are to be analyzed.
 
@@ -132,11 +136,13 @@ Based on this information and that extracted from the CDF files presented in the
 
 - To run this example it is necessary to include "metdata.R" as a sourse:
 
-  '''  source("R/metdata.R") '''
+```
+  source("R/metdata.R")
+  metan(outfile="../cdf2midout.csv", pat=".CDF")
+```
   
   and execute the command:
 
- ''' metan(outfile="../cdf2midout.csv", pat=".CDF") '''
  
 
 The file containing the results provided by cdf2mid (here "ramidin.csv") can be used by RaMID, or directly proceed for further correction by MIDcor.

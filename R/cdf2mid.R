@@ -1,16 +1,10 @@
-  library(ncdf4) # library reading cdf
-  source("R/libcdf.R")
-  source("R/metdata.R")
-  
- oldi<-getwd() # 17: "20120719 A549 24h Glucosa C1C2 1_01.CDF" 
-  setwd("./wd")
 #  setwd(oldi)
+ oldi<-getwd()
 
-#  source("modRamid.R")
-
-metan<-function(outfile="../ramidin.csv", pat=".CDF"){ # main function; evaluates MID for a set of CDF files specified by pat
+metan<-function(outfile="../cdf2midout.csv", pat=".CDF"){ # main function; evaluates MID for a set of CDF files specified by pat
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
+  setwd("./wd")
   start.time <- Sys.time()
    lcdf<-dir(pattern=pat)
 #    fi0=paste("../",cel,lab, sep=""); # file to write Midcor output in PhenoMeNal format
