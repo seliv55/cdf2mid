@@ -76,6 +76,8 @@ cdf2MID reads the CDF files presented in the working directory, and then
  
  source("R/libcdf.R") 
  
+ source("metdata")
+ 
  library(ncdf4)
 ```
 
@@ -137,7 +139,7 @@ Based on this information and that extracted from the CDF files presented in the
 - Run this example using the command:
 
 ```
-  metan(outfile="../cdf2midout.csv", pat=".CDF")
+  metan(outfile="cdf2midout.csv", cdfzip="roldan.zip")
 ```
 
 The file containing the results provided by cdf2mid (here "cdf2midout.csv") can be used by RaMID, or directly proceed for further correction by MIDcor.

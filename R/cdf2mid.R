@@ -3,13 +3,12 @@
 #  source(infile)
 # print(infile)
 
-metan<-function(outfile="../cdf2midout.csv",cdfdir="wd"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
+metan<-function(outfile="cdf2midout.csv",cdfzip="roldan.zip"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
-  setwd(cdfdir)
+ temp <- tempdir()#paste(,"/",sep="")  #"data/ttt/"  #
+ lcdf<-unzip(cdfzip,exdir=temp)
   start.time <- Sys.time()
-   pat=".CDF"
-   lcdf<-dir(pattern=pat)
 #    fi0=paste("../",cel,lab, sep=""); # file to write Midcor output in PhenoMeNal format
      df0<-data.frame(); # data frame to write Midcor output in PhenoMeNal format
 #title<-data.frame("MS Assay Name","cells","tracer molecule","labelled positions","abundance(%)","injection","Replicate","Factor Value[Incubation time](hours)", "Metabolite name", "CHEBI identifier","fragment positions in the parent molecule", "Empirical formula derivatized molecule/fragment", "retention(min)", "m/z monitored", "signal intensity", "Isotopologue", "isotologue abundance(%)")
@@ -38,7 +37,8 @@ title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled position
      finames<-a[[1]]; ldf<-a[[2]]   # output 1: reltive intensities; 2: relative peak areas;
  if(length(a)>1)  { ifi<-ifi+1; mzr<-a[[3]]; imet<-a[[4]]; dist<-a[[5]];
         for(j in 1:length(imet)) {data=metabs[[imet[j]]]; miso=character(); miso=paste("13C",mzr[[j]]-data$mz0,sep="") #isotopomer names
-  dfrow<-data.frame(fi,cel,labname,labpos,abund,inj,rep,tinc,data$metname,data$chebi,data$Cfrg,data$Cder,data$rt, mzr[[j]], c(0,dist[[j]]), miso," ")
+        fispl<-tail(strsplit(fi,"/")[[1]],1)
+  dfrow<-data.frame(fispl,cel,labname,labpos,abund,inj,rep,tinc,data$metname,data$chebi,data$Cfrg,data$Cder,data$rt, mzr[[j]], c(0,dist[[j]]), miso," ")
   df0<-rbind(df0,dfrow) # filling df with dfrow
      }
      }
@@ -55,6 +55,7 @@ title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled position
 #       write.table(title, file=fi0, row.names = F, col.names = F, sep=",")
 #       write.table(df0, file=fi0, row.names = F, col.names = F, append=T, sep=",")
   Sys.time() - start.time
+    unlink(temp, recursive = T, force = T)
   }
        
 info<-function(mz,iv,npoint){
@@ -113,7 +114,7 @@ findpats<-function(fi,finames,ldf,tlim=50){
   nma<-findmax(totiv=totiv,tin=tpos[ranum],tfi=tpos[ranum+1]);
   
    if((rett[tpos[i]+nma]>(rts-15))&(rett[tpos[i]+nma]<(rts+15))){ imet<-icyc
-            fil<-paste("../files/",metp$mz0,metp$metname,sep="")
+            fil<-paste("files/",metp$mz0,metp$metname,sep="")
          if(!(fil %in% finames)) { finames<-c(finames,fil); cat("\n",file=fil)
            ldf[[length(finames)]]<-data.frame();       }
                finum<-which(finames %in% fil)
