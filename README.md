@@ -76,18 +76,18 @@ cdf2MID reads the CDF files presented in the working directory, and then
  
  source("R/libcdf.R") 
  
- source("metdata")
- 
  library(ncdf4)
 ```
 
-- the directory wd/ should contain the .cdf files that are to be analyzed.
+- a zip file should contain the .cdf files that are to be analyzed.
 
 ## Usage Instructions
 
 - The analysis performed when executing the  command:
 
 ```
+ source("metdata")
+ 
  metan(outfile, pat)
 ```
  
@@ -125,6 +125,8 @@ Based on this information and that extracted from the CDF files presented in the
 - Run this example using the command:
 
 ```
+  source("metdata")
+ 
   metan(outfile="cdf2midout.csv", cdfzip="roldan.zip")
 ```
 
