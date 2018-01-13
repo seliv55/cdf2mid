@@ -114,7 +114,7 @@ findpats<-function(fi,finames,ldf,tlim=50){
   nma<-findmax(totiv=totiv,tin=tpos[ranum],tfi=tpos[ranum+1]);
   
    if((rett[tpos[i]+nma]>(rts-15))&(rett[tpos[i]+nma]<(rts+15))){ imet<-icyc
-            fil<-paste("files/",metp$mz0,metp$metname,sep="")
+            fil<-paste(metp$mz0,metp$metname,sep="")
          if(!(fil %in% finames)) { finames<-c(finames,fil); cat("\n",file=fil)
            ldf[[length(finames)]]<-data.frame();       }
                finum<-which(finames %in% fil)
