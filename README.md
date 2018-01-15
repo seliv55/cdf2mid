@@ -127,7 +127,7 @@ Based on this information and that extracted from the CDF files presented in the
 ```
   source("metdata")
  
-  metan(outfile="cdf2midout.csv", cdfzip="roldan.zip")
+  metan(outfile="cdf2midout.csv", cdfdir="wd")
 ```
 
 The file containing the results provided by cdf2mid (here "cdf2midout.csv") can be used by RaMID, or directly proceed for further correction by MIDcor.

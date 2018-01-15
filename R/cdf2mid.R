@@ -3,11 +3,16 @@
 #  source(infile)
 # print(infile)
 
-metan<-function(outfile="cdf2midout.csv",cdfzip="roldan.zip"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
+metan<-function(outfile="cdf2midout.csv",cdfdir="wd"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
- temp <- tempdir()#paste(,"/",sep="")  #"data/ttt/"  #
- lcdf<-unzip(cdfzip,exdir=temp)
+# temp <- tempdir()#paste(,"/",sep="")  #"data/ttt/"  #
+# lcdf<-unzip(cdfzip,exdir=temp)
+#   setwd(cdfdir)
+  start.time <- Sys.time()
+   pat=".CDF"
+lcdf<-dir(path = cdfdir,pattern=pat)
+for(i in 1:length(lcdf)) lcdf[i]=paste(cdfdir,"/",lcdf[i], sep="")
   start.time <- Sys.time()
 #    fi0=paste("../",cel,lab, sep=""); # file to write Midcor output in PhenoMeNal format
      df0<-data.frame(); # data frame to write Midcor output in PhenoMeNal format
@@ -55,7 +60,7 @@ title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled position
 #       write.table(title, file=fi0, row.names = F, col.names = F, sep=",")
 #       write.table(df0, file=fi0, row.names = F, col.names = F, append=T, sep=",")
   Sys.time() - start.time
-    unlink(temp, recursive = T, force = T)
+#    unlink(temp, recursive = T, force = T)
   }
        
 info<-function(mz,iv,npoint){
