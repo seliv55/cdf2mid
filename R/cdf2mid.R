@@ -48,7 +48,7 @@ title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled position
      }
      }
        }
-      for(i in 1:length(finames))  write.table(ldf[i], file=finames[i], row.names = F, col.names = F, sep=",") #simple output format
+#      for(i in 1:length(finames))  write.table(ldf[i], file=finames[i], row.names = F, col.names = F, sep=",") #simple output format
 #    fi1=paste("../ramidin.csv"); #Ramid output
      write.table(title, file=outfile, row.names = F, col.names = F, sep=",") # Metabolights format, titles
        write.table(df0, file=outfile, row.names = F, col.names = F, append=T, sep=",") # Midcor input in PhenoMeNal format
@@ -119,10 +119,10 @@ findpats<-function(fi,finames,ldf,tlim=50){
   nma<-findmax(totiv=totiv,tin=tpos[ranum],tfi=tpos[ranum+1]);
   
    if((rett[tpos[i]+nma]>(rts-15))&(rett[tpos[i]+nma]<(rts+15))){ imet<-icyc
-            fil<-paste(metp$mz0,metp$metname,sep="")
-         if(!(fil %in% finames)) { finames<-c(finames,fil); cat("\n",file=fil)
-           ldf[[length(finames)]]<-data.frame();       }
-               finum<-which(finames %in% fil)
+#            fil<-paste(metp$mz0,metp$metname,sep="")
+#         if(!(fil %in% finames)) { finames<-c(finames,fil); cat("\n",file=fil)
+#           ldf[[length(finames)]]<-data.frame();       }
+#               finum<-which(finames %in% fil)
  
   mzi<-mzind[ranum]+mzpt[ranum]*(nma-tlim)
    tl<-tpos[ranum]+nma-tlim;  tu<-tpos[ranum]+nma+tlim;
@@ -137,7 +137,7 @@ findpats<-function(fi,finames,ldf,tlim=50){
     a<- peakdist(fi,intens,rett1,tlim)
     dispik[[length(dispik)+1]]<-a[[1]]; disar[[length(disar)+1]]<-a[[2]]
     fi<-strsplit(fi,"CDF")[[1]][1]
-    ldf[[finum]]<-rbind(ldf[[finum]],t(c(fi,disar[[length(disar)]])))
+#    ldf[[finum]]<-rbind(ldf[[finum]],t(c(fi,disar[[length(disar)]])))
     lmet<-c(lmet,imet)
       } }
    }
