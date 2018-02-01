@@ -1,4 +1,4 @@
-![Logo](figs/logo.png)
+![Logo](logo.png)
 
 # cdf2MID
 Version: 1.0
