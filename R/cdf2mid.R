@@ -3,7 +3,7 @@
 #  source(infile)
 # print(infile)
 
-metan<-function(outfile="cdf2midout.csv",cdfdir="wd"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
+metan<-function(infile="simetdat",cdfdir="wd/",outfile="cdf2midout.csv"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
 # temp <- tempdir()#paste(,"/",sep="")  #"data/ttt/"  #
@@ -12,18 +12,24 @@ metan<-function(outfile="cdf2midout.csv",cdfdir="wd"){ #infile="metdata",  main 
   start.time <- Sys.time()
    pat=".CDF"
 lcdf<-dir(path = cdfdir,pattern=pat)
-for(i in 1:length(lcdf)) lcdf[i]=paste(cdfdir,"/",lcdf[i], sep="")
+for(i in 1:length(lcdf)) lcdf[i]=paste(cdfdir,lcdf[i], sep="")
+   intab<-read.table(infile,header=T,sep=" ")
   start.time <- Sys.time()
-#    fi0=paste("../",cel,lab, sep=""); # file to write Midcor output in PhenoMeNal format
-     df0<-data.frame(); # data frame to write Midcor output in PhenoMeNal format
-#title<-data.frame("MS Assay Name","cells","tracer molecule","labelled positions","abundance(%)","injection","Replicate","Factor Value[Incubation time](hours)", "Metabolite name", "CHEBI identifier","fragment positions in the parent molecule", "Empirical formula derivatized molecule/fragment", "retention(min)", "m/z monitored", "signal intensity", "Isotopologue", "isotologue abundance(%)")
      
 title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled positions","abundance","Parameter Value[injection]","Parameter Value[Replicate]","Factor Value[Incubation time]","Metabolite name","CHEBI identifier","atomic positions to the parent molecule/metabolite name","Empirical formula derivatized molecule/fragment", "retention(min)", "m/z monitored","signal intensity","isotopologue","isotologue abundance relative concentration")
+tracer<-list(
+list(nik="Gluc",name="D-[1,2-C13]-Glucose",pos="1,1,0,0,0,0",abund=50),
+list(nik="Glutam",name="[3-C13]-Glutamine",pos="0,0,1,0,0",abund=100)
+)
+
+inctime<-c(0,24)
+
+cells<-c("A549","NCI","BEAS2B")
 
      ldf<-list(); # data frame to write Ramid output in PhenoMeNal format
      ifi<-0;
      finames=character()
-     df0<-data.frame(); # data frame to write Ramid output in PhenoMeNal format
+     df0<-data.frame(); # data frame to write data in PhenoMeNal format
 
        for(fi in lcdf){itrac<-0 #labname<-" "; labpos<-" "; abund<-" "; ti<-0 #CDF files one by one
          for(trac in tracer) {  #check what label was used for the given file
@@ -37,17 +43,15 @@ title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled position
            
            inj=substr(fi,nchar(fi)-4,nchar(fi)-4)
            rep=substr(fi,nchar(fi)-7,nchar(fi)-7)
-           
-     a <-findpats(fi,finames,ldf);
-     finames<-a[[1]]; ldf<-a[[2]]   # output 1: reltive intensities; 2: relative peak areas;
- if(length(a)>1)  { ifi<-ifi+1; mzr<-a[[3]]; imet<-a[[4]]; dist<-a[[5]];
-        for(j in 1:length(imet)) {data=metabs[[imet[j]]]; miso=character(); miso=paste("13C",mzr[[j]]-data$mz0,sep="") #isotopomer names
+           print(fi)
+     a <-findpats(fi,intab)
+     irow<-a[[1]]; mzr<-a[[2]]; dist<-a[[3]]
+      if(irow>0)  {data=intab[irow,]
+    miso=character(); miso=paste("13C",mzr-data$mz0,sep="") #isotopomer names
         fispl<-tail(strsplit(fi,"/")[[1]],1)
-  dfrow<-data.frame(fispl,cel,labname,labpos,abund,inj,rep,tinc,data$metname,data$chebi,data$Cfrg,data$Cder,data$rt, mzr[[j]], c(0,dist[[j]]), miso," ")
+  dfrow<-data.frame(fispl,cel,labname,labpos,abund,inj,rep,tinc,as.character(data$Name),"Chebi",as.character(data$Fragment),as.character(data$Formula),data$RT, miso, dist, miso," ")
   df0<-rbind(df0,dfrow) # filling df with dfrow
-     }
-     }
-       }
+     }     }
 #      for(i in 1:length(finames))  write.table(ldf[i], file=finames[i], row.names = F, col.names = F, sep=",") #simple output format
 #    fi1=paste("../ramidin.csv"); #Ramid output
      write.table(title, file=outfile, row.names = F, col.names = F, sep=",") # Metabolights format, titles
@@ -100,48 +104,81 @@ setmat<-function(mz00,mzrang,mzind,iv,mzpt,tini,tfin){
   
   
   
-findpats<-function(fi,finames,ldf,tlim=50){
+findpats<-function(fi,intab,tlim=100){
 # fi: file name
-# metp: parameters of metabolite (mz for m0, retention time)
     a<-readcdf(fi);
 #    mz, intensities, number of mz-point at each rett, sum of iv at each rett
      mz<-a[[1]]; iv<-a[[2]]; npoint<-a[[3]]; rett<-a[[4]]; totiv<-a[[5]];
 #    summary: 
  a<-info(mz,iv,npoint); mzpt<-a[[1]]; tpos<-a[[2]]; mzind<-a[[3]]; mzrang<-a[[4]]; 
      
-     icyc<-0; lmet<-numeric(); imet<--1; mzr<-list(); dispik<-list(); disar<-list()
+     icyc<-0; imet<--1; ranum<- 0
      
-         for(metp in metabs) { icyc=icyc+1;  rts<-as.numeric(metp$rt)*60.;
-        for(i in 1:length(mzrang))
-   if((metp$mz0 %in% mzrang[[i]]) & (rts > rett[tpos[i]]) & (rts < rett[tpos[i+1]-5])) {
-#   find whether mid for a given metabolite is presented in the file fi 
-                 ranum<-i
-  nma<-findmax(totiv=totiv,tin=tpos[ranum],tfi=tpos[ranum+1]);
-  
-   if((rett[tpos[i]+nma]>(rts-15))&(rett[tpos[i]+nma]<(rts+15))){ imet<-icyc
-#            fil<-paste(metp$mz0,metp$metname,sep="")
-#         if(!(fil %in% finames)) { finames<-c(finames,fil); cat("\n",file=fil)
-#           ldf[[length(finames)]]<-data.frame();       }
-#               finum<-which(finames %in% fil)
- 
-  mzi<-mzind[ranum]+mzpt[ranum]*(nma-tlim)
-   tl<-tpos[ranum]+nma-tlim;  tu<-tpos[ranum]+nma+tlim;
-    tiv<-totiv[tl:tu]; rett1<-rett[tl:tu] #separate area peak ± tlim for total intensity and retention
-    nmi<-which.min(tiv);
-   
- a<-setmat(mz00=metp$mz0,mzrang=mzrang[[ranum]],mzind=mzi,iv=iv, mzpt=mzpt[ranum],tini=tl,tfin=tu);
- intens<-a[[1]];  mzr[[length(mzr)+1]]<-a[[2]];# separate area peak ± tlim for intensity matrix
-   bas=baseln(intens,nmi,tlim)   # baseline:
-  intens<-subas(intens,bas)    # subtract baseline
-  
-    a<- peakdist(fi,intens,rett1,tlim)
-    dispik[[length(dispik)+1]]<-a[[1]]; disar[[length(disar)+1]]<-a[[2]]
-    fi<-strsplit(fi,"CDF")[[1]][1]
-#    ldf[[finum]]<-rbind(ldf[[finum]],t(c(fi,disar[[length(disar)]])))
-    lmet<-c(lmet,imet)
-      } }
+     rts<-intab$RT*60.; mz0<-round(intab$mz0,1); mzcon<-round(intab$control,1)
+#  search for specified metabolites
+ for(i in 1:nrow(intab)) {nm<-as.character(intab$Name[i]);
+        ltp<- (rts[i]<rett[tpos])       # time interval that includes rts
+        ranum<-(c(1:length(tpos))[ltp])[1]-1;
+        ranum[is.na(ranum)]<-0; if(ranum<1) next
+   if((mz0[i] %in% mzrang[[ranum]])&(mzcon[i] %in% mzrang[[ranum]])) {
+#   check whether mid for a given metabolite is presented in the found time interval
+        tpclose<-which.min(abs(rett-rts[i]))
+#        tlim<-min(tlim,tpclose-tpos[ranum],tpos[ranum+1]-tpclose)
+        tplow<-max(tpclose-tlim,tpos[ranum]); tpup<-min(tpclose+tlim,tpos[ranum+1])     # boundaries that include desired peak
+   mzi<-mzind[ranum]+mzpt[ranum]*(tplow-tpos[ranum])#index of initial mz point
+   mzfi<-mzi+mzpt[ranum]*(tpup-tplow)   	#index of final mz point
+   rtpeak<-rett[tplow:tpup] # retention times within the boundaries
+        tpclose<-which.min(abs(rtpeak-rts[i]))
+# additional peak
+      nmass<-3; rtdev<-20;
+    misoc<-c(intab$control[i],intab$control[i]+1,intab$control[i]+2)#desired mz values
+    lmisoc<-mzrang[[ranum]] %in% misoc
+    intens<-matrix(ncol=nmass,nrow=(tpup-tplow),0)
+    intens<-sweep(intens,2,iv[mzi:mzfi][lmisoc],'+')
+    pospiks<-apply(intens,2,which.max)
+    pikintc<-apply(intens,2,max)
+   if(max(abs(diff(pospiks)))>9) goodiso<-which.min(abs(pospiks-tpclose))  else goodiso<-which.max(pikintc)
+        pikposc<-pospiks[goodiso]
+        
+  if((pikposc>2)&(pikposc<(nrow(intens)-2))) {
+        maxpikc<-pikintc[goodiso]
+    for(k in 1:nmass) pikintc[k]<-sum(intens[(pikposc-2):(pikposc+2),k])
+      basc<-round(apply(intens,2,basln,pos=pikposc,ofs=5))
+                deltac<-round(pikintc-basc)
+                ratc<-deltac/basc
+# main peak
+  if(ratc[goodiso]>3){ a<-as.character(intab$Fragment[i])
+    nCfrg<-as.numeric(substr(a,5,nchar(a)))-as.numeric(substr(a,2,2))+1
+        nmass<-nCfrg+5 # number of isotopomers to present calculated from formula
+    misofin<-array((mz0[i]-1):(mz0[i]+nmass-2)) # isotopores to present in the spectrum
+    lmisofin<-mzrang[[ranum]] %in% misofin # do they are present in the given mzrang?
+    pikmz<-mzrang[[ranum]][lmisofin] # extrat those that are present
+    nmass<-length(pikmz)
+    intens<-matrix(ncol=nmass,nrow=(tpup-tplow),0)
+    intens<-sweep(intens,2,iv[mzi:mzfi][lmisofin],'+') # create matrix iv(col=mz,row=rt) that includes the peak
+     piklim<-min(rtdev,pikposc-1,nrow(intens)-pikposc-1)
+    intens<-intens[(pikposc-piklim):(pikposc+piklim),]
+
+    pikint<-apply(intens,2,max)
+    isomax<-which.max(pikint)
+    pikpos<-which.max(intens[,isomax])
+    maxpik<-intens[pikpos,isomax]; smaxpik<-"max_peak:";
+     if(maxpik>8300000) {smaxpik<-"**** !?MAX_PEAK:"; print(paste("** max=",maxpik,"   ",nm,"   **")); break;}
+    bas<-apply(intens,2,basln,pos=pikpos,ofs=15)
+  if((pikpos>2)&(pikpos<(nrow(intens)-2))){
+     for(k in 1:nmass) pikint[k]<-sum(intens[(pikpos-2):(pikpos+2),k])
    }
- return(list(finames,ldf,mzr,lmet,disar))}
+    delta<-round(pikint-bas); s5tp<-"5_timepoints:"
+    if((misofin[1]==pikmz[1])&(delta[1]/delta[2] > 0.075)) { s5tp<-"*!?* 5_timepoints:";
+      print(paste("+++ m-1=",delta[1],"  m0= ",delta[2],"   +++ ",nm)); break }
+          
+                rat<-delta/bas
+                rel<-round(delta/max(delta),4)      # normalization
+                imet<-i
+ break
+      } }
+   } }
+ return(list(imet,pikmz,delta))}
  
   peakdist<-function(fi,intens,rett1,tlim=50,peakf=5,ipmi=5,stabin=2){
 # fi: file name
@@ -162,6 +199,15 @@ findpats<-function(fi,finames,ldf,tlim=50){
 #    plal(fi,reti,ye,yf)
  return(list(mm0[tlim,],relar))#MID calculated as ratio either of intensities or areas of fitted peaks
   }
+
+basln<-function(vec,pos=length(vec),ofs=0){# baseline
+   basl<--1; basr<--1;bas<-0
+  if(pos>ofs) basl<-mean(vec[1:(pos-ofs)])
+  if(pos<(length(vec)-ofs)) basr<-mean(vec[(pos+ofs):length(vec)])
+  if((basl>0)&(basr>0)) bas<-min(basl,basr)
+  else if(basl<0) bas<-basr
+  else if(basr<0) bas<-basl
+ return(bas*5)}
 
 #  
 #     
