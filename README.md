@@ -88,13 +88,21 @@ cdf2MID reads the CDF files presented in the working directory, and then
 - The file "simetdat" is an example of the information that has to be provided in addition to the netCDF files. This information is necessary for further analysis. table keeping the format accepted as exchangeable with the Metabolights database. Currently it content is:
     
 Name       RT     mz0   Fragment  Formula        control
+
 Citrate   37.5    459     C1-C6   C20H39O6Si3     459
+
 Aspartate 28.5    418     C1-C4   C18H40O4N1Si3   418
+
 Malate    27.2    419     C1-C4   C18H39O5Si3     419
+
 Glucose   3.74    328     C1-C6   C14H18O8N1      328
+
 Glutamate2-4 3.79 152     C2-C4   C5H5O1N1F3      152
+
 Glutamate2-5 3.79 198     C2-C5   C6H7O3N1F3      198
+
 Lactate   5.33    328     C1-C3   C10H13O3N1F7    328
+
 Ribose    5.28    256     C1-C5   C11H14O6N1      256
 
 The first column indicates the names of metabolites of interest, the second column corresponding retention times in minutes, the third is the m/z value for the lightest isotopomer of the desired fragments, whos carbons originated from the initial molecule, and the formula of whole derivate are shown in the next two columns. Gas chromatography technique often produces several fragments ot the same derivated metabolite. The last column shows m/z value of the lightest isotopomer of another fragment of the same metabolite, which serves as a ccontrol that the given metabolite was indeed detected. However, since in the presented example only one fragment of each metabolite was registered, here the last column just repeats the third column. 
