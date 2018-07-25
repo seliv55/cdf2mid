@@ -94,11 +94,11 @@ The file containing the results provided by cdf2mid (here "cdf2midout.csv") can 
 
 - To run Cdf2mid as a docker image, created locally, go to a folder, containing the input data, and run the image:
 ```sh
- docker run -it -v $PWD:/data cdf2mid -i /data/<inFile> -o /data/<ouFile> -z /data/data/[cdfzip]
+ docker run -it -v $PWD:/data cdf2mid -i /data/<infile> -z /data/<cdfdir> -o /data/<outfile>
 ```
 To run Cdf2mid as a docker image created in the PhenoMeNal repository, execute
 ```sh
-docker run -it -v $PWD:/data container-registry.phenomenal-h2020.eu/phnmnl/cdf2mid -i /data/inFile -o /data/ouFile -z /data/data/cdfzip
+docker run -it -v $PWD:/data container-registry.phenomenal-h2020.eu/phnmnl/cdf2mid -i /data/<infile> -z /data/<cdfdir> -o /data/<outfile>
 ```
 Cdf2mid can be used also without all the previous steps of downloading the code or docher image installation, but directly as a part of <a href=https://public.phenomenal-h2020.eu/>PhenoMeNal Cloud Research Environment</a>. Go to Fluxomics tool category, and then click on Cdf2mid, and fill the expected input files, then press Run. Additionally, the tool can be used as part of a workflow with Midcor, Iso2flux and the Escher-Fluxomics tools. On a PhenoMeNal deployed CRE you should find as well a Fluxomics Stationary workflow, which includes Cdf2mid. This way of using it is described <a href=https://github.com/phnmnl/phenomenal-h2020/wiki/fluxomics-workflow>here</a>.
 
