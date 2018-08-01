@@ -3,7 +3,7 @@
 #  source(infile)
 # print(infile)
 
-metan<-function(infile="simetdat",cdfdir="wd/",outfile="cdf2midout.csv"){ #infile="metdata",  main function; evaluates MID for a set of CDF files specified by pat
+metan<-function(infile="simetdat", cdfdir="wd/",outfile="cdf2midout.csv"){ # infile="sw620",cdfdir="cexam/", outfile="cdf2midout.csv"
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
 # temp <- tempdir()#paste(,"/",sep="")  #"data/ttt/"  #
@@ -14,17 +14,17 @@ metan<-function(infile="simetdat",cdfdir="wd/",outfile="cdf2midout.csv"){ #infil
 lcdf<-dir(path = cdfdir,pattern=pat)
 for(i in 1:length(lcdf)) lcdf[i]=paste(cdfdir,lcdf[i], sep="")
    intab<-read.table(infile,header=T,sep=" ")
-  start.time <- Sys.time()
      
 title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled positions","abundance","Parameter Value[injection]","Parameter Value[Replicate]","Factor Value[Incubation time]","Metabolite name","CHEBI identifier","atomic positions to the parent molecule/metabolite name","Empirical formula derivatized molecule/fragment", "retention(min)", "m/z monitored","signal intensity","isotopologue","isotologue abundance relative concentration")
 tracer<-list(
 list(nik="Gluc",name="D-[1,2-C13]-Glucose",pos="1,1,0,0,0,0",abund=50),
+list(nik="12Glc",name="D-[1,2-C13]-Glucose",pos="1,1,0,0,0,0",abund=50),
 list(nik="Glutam",name="[3-C13]-Glutamine",pos="0,0,1,0,0",abund=100)
 )
 
-inctime<-c(0,24)
+inctime<-c(0,6,24)
 
-cells<-c("A549","NCI","BEAS2B")
+cells<-c("A549","NCI","BEAS2B","SW620")
 
      ldf<-list(); # data frame to write Ramid output in PhenoMeNal format
      ifi<-0;
@@ -33,7 +33,8 @@ cells<-c("A549","NCI","BEAS2B")
 
        for(fi in lcdf){itrac<-0 #labname<-" "; labpos<-" "; abund<-" "; ti<-0 #CDF files one by one
          for(trac in tracer) {  #check what label was used for the given file
-         if(grepl(trac$nik,fi)) {itrac<-itrac+1; labname<-trac$name; labpos<-trac$pos; abund<-trac$abund }
+         if(grepl(trac$nik,fi)) {
+             itrac<-itrac+1; labname<-trac$name; labpos<-trac$pos; abund<-trac$abund; break }
          if(itrac==0) { labname<-" "; labpos<-" "; abund<-0 }}
          
            for(tinc in inctime)  #check the file for incubation time
@@ -41,16 +42,16 @@ cells<-c("A549","NCI","BEAS2B")
            
            for(cel in cells) if(grepl(cel,fi)) break
            
-           inj=substr(fi,nchar(fi)-4,nchar(fi)-4)
-           rep=substr(fi,nchar(fi)-7,nchar(fi)-7)
+           l<-regexpr("R[0-9]_", fi)+1
+           if(l==0) l<-regexpr("C[0-9][ _][0-9]", fi)+3
+           inj<-substr(fi,nchar(fi)-4,nchar(fi)-4)
+           rep<-substr(fi,l,l)
            print(fi)
-     a <-findpats(fi,intab)
-     irow<-a[[1]]; mzr<-a[[2]]; dist<-a[[3]]
-      if(irow>0)  {data=intab[irow,]
-    miso=character(); miso=paste("13C",mzr-data$mz0,sep="") #isotopomer names
         fispl<-tail(strsplit(fi,"/")[[1]],1)
-  dfrow<-data.frame(fispl,cel,labname,labpos,abund,inj,rep,tinc,as.character(data$Name),"Chebi",as.character(data$Fragment),as.character(data$Formula),data$RT, miso, dist, miso," ")
-  df0<-rbind(df0,dfrow) # filling df with dfrow
+  dfrow<-data.frame(fispl,cel,labname,labpos,abund,inj,rep,tinc)
+     dfrow <-findpats(fi,intab,dfrow)
+     irow<-nrow(dfrow)
+      if(irow>1)  {  df0<-rbind(df0,dfrow) # filling df with dfrow
      }     }
 #      for(i in 1:length(finames))  write.table(ldf[i], file=finames[i], row.names = F, col.names = F, sep=",") #simple output format
 #    fi1=paste("../ramidin.csv"); #Ramid output
@@ -104,7 +105,7 @@ setmat<-function(mz00,mzrang,mzind,iv,mzpt,tini,tfin){
   
   
   
-findpats<-function(fi,intab,tlim=100){
+findpats<-function(fi,intab,dfrow,tlim=100){
 # fi: file name
     a<-readcdf(fi);
 #    mz, intensities, number of mz-point at each rett, sum of iv at each rett
@@ -112,7 +113,7 @@ findpats<-function(fi,intab,tlim=100){
 #    summary: 
  a<-info(mz,iv,npoint); mzpt<-a[[1]]; tpos<-a[[2]]; mzind<-a[[3]]; mzrang<-a[[4]]; 
      
-     icyc<-0; imet<--1; ranum<- 0
+     icyc<-0; imet<--1; ranum<- 0; dfrow1=data.frame()
      
      rts<-intab$RT*60.; mz0<-round(intab$mz0,1); mzcon<-round(intab$control,1)
 #  search for specified metabolites
@@ -120,6 +121,7 @@ findpats<-function(fi,intab,tlim=100){
         ltp<- (rts[i]<rett[tpos])       # time interval that includes rts
         ranum<-(c(1:length(tpos))[ltp])[1]-1;
         ranum[is.na(ranum)]<-0; if(ranum<1) next
+        mzrang[[ranum]]<-round(mzrang[[ranum]],1)
    if((mz0[i] %in% mzrang[[ranum]])&(mzcon[i] %in% mzrang[[ranum]])) {
 #   check whether mid for a given metabolite is presented in the found time interval
         tpclose<-which.min(abs(rett-rts[i]))
@@ -147,8 +149,10 @@ findpats<-function(fi,intab,tlim=100){
                 deltac<-round(pikintc-basc)
                 ratc<-deltac/basc
 # main peak
-  if(ratc[goodiso]>3){ a<-as.character(intab$Fragment[i])
-    nCfrg<-as.numeric(substr(a,5,nchar(a)))-as.numeric(substr(a,2,2))+1
+  if(ratc[goodiso]>3){ frag<-as.character(intab$Fragment[i])
+     print(i)
+     frpos<-gregexpr("C[0-9]",frag)[[1]]+1
+    nCfrg<-frpos[2]-frpos[1]+1
         nmass<-nCfrg+5 # number of isotopomers to present calculated from formula
     misofin<-array((mz0[i]-1):(mz0[i]+nmass-2)) # isotopores to present in the spectrum
     lmisofin<-mzrang[[ranum]] %in% misofin # do they are present in the given mzrang?
@@ -163,22 +167,24 @@ findpats<-function(fi,intab,tlim=100){
     isomax<-which.max(pikint)
     pikpos<-which.max(intens[,isomax])
     maxpik<-intens[pikpos,isomax]; smaxpik<-"max_peak:";
-     if(maxpik>8300000) {smaxpik<-"**** !?MAX_PEAK:"; print(paste("** max=",maxpik,"   ",nm,"   **")); break;}
+     if(maxpik>8300000) {smaxpik<-"**** !?MAX_PEAK:"; print(paste("** max=",maxpik,"   ",nm,"   **")); next;}
     bas<-apply(intens,2,basln,pos=pikpos,ofs=15)
   if((pikpos>2)&(pikpos<(nrow(intens)-2))){
      for(k in 1:nmass) pikint[k]<-sum(intens[(pikpos-2):(pikpos+2),k])
    }
     delta<-round(pikint-bas); s5tp<-"5_timepoints:"
     if((misofin[1]==pikmz[1])&(delta[1]/delta[2] > 0.075)) { s5tp<-"*!?* 5_timepoints:";
-      print(paste("+++ m-1=",delta[1],"  m0= ",delta[2],"   +++ ",nm)); break }
+      print(paste("+++ m-1=",delta[1],"  m0= ",delta[2],"   +++ ",nm)); next }
           
                 rat<-delta/bas
                 rel<-round(delta/max(delta),4)      # normalization
-                imet<-i
- break
+	dat=intab[i,]
+    miso=paste("13C",pikmz-dat$mz0,sep="") #isotopomer names
+  dfrow0<-cbind(dfrow,as.character(dat$Name),"Chebi",as.character(dat$Fragment),as.character(dat$Formula),dat$RT, miso, delta, miso," ")
+   dfrow1=rbind(dfrow1,dfrow0)
       } }
    } }
- return(list(imet,pikmz,delta))}
+ return(dfrow1)}
  
   peakdist<-function(fi,intens,rett1,tlim=50,peakf=5,ipmi=5,stabin=2){
 # fi: file name
