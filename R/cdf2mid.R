@@ -3,7 +3,7 @@
 #  source(infile)
 # print(infile)
 
-metan<-function(infile="simetdat", cdfdir="wd/",outfile="cdf2midout.csv"){ # infile="sw620",cdfdir="cexam/", outfile="cdf2midout.csv"
+metan<-function(infile="sw620",cdfdir="exam3/",outfile="cdf2midout.csv"){ # infile="simetdat", cdfdir="wd/", outfile="cdf2midout.csv"
 #  and metabolite specified by m/z M-1 referred as ms
 # call: metan()
 # temp <- tempdir()#paste(,"/",sep="")  #"data/ttt/"  #
@@ -19,7 +19,9 @@ title<-data.frame("Raw Data File", "cells", "tracer molecule","labelled position
 tracer<-list(
 list(nik="Gluc",name="D-[1,2-C13]-Glucose",pos="1,1,0,0,0,0",abund=50),
 list(nik="12Glc",name="D-[1,2-C13]-Glucose",pos="1,1,0,0,0,0",abund=50),
-list(nik="Glutam",name="[3-C13]-Glutamine",pos="0,0,1,0,0",abund=100)
+list(nik="Glutam",name="[3-C13]-Glutamine",pos="0,0,1,0,0",abund=100),
+list(nik="UGln",name="[U-C13]-Glutamine",pos="1,1,1,1,1",abund=100),
+list(nik="cold",name="Glucose",pos="0,0,0,0,0,0",abund=100)
 )
 
 inctime<-c(0,6,24)
@@ -152,7 +154,8 @@ findpats<-function(fi,intab,dfrow,tlim=100){
   if(ratc[goodiso]>3){ frag<-as.character(intab$Fragment[i])
      print(i)
      frpos<-gregexpr("C[0-9]",frag)[[1]]+1
-    nCfrg<-frpos[2]-frpos[1]+1
+      c1=as.numeric(substr(frag,frpos[1],frpos[1]));  c2=as.numeric(substr(frag,frpos[2],nchar(frag)))
+    nCfrg<-c2-c1+1
         nmass<-nCfrg+5 # number of isotopomers to present calculated from formula
     misofin<-array((mz0[i]-1):(mz0[i]+nmass-2)) # isotopores to present in the spectrum
     lmisofin<-mzrang[[ranum]] %in% misofin # do they are present in the given mzrang?
