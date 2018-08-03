@@ -114,7 +114,6 @@ findpats<-function(fi,intab,dfrow,tlim=100){
      mz<-a[[1]]; iv<-a[[2]]; npoint<-a[[3]]; rett<-a[[4]]; totiv<-a[[5]];
 #    summary: 
  a<-info(mz,iv,npoint); mzpt<-a[[1]]; tpos<-a[[2]]; mzind<-a[[3]]; mzrang<-a[[4]]; 
-     
      icyc<-0; imet<--1; ranum<- 0; dfrow1=data.frame()
      
      rts<-intab$RT*60.; mz0<-round(intab$mz0,1); mzcon<-round(intab$control,1)
