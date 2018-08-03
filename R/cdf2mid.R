@@ -115,7 +115,6 @@ findpats<-function(fi,intab,dfrow,tlim=100){
 #    summary: 
  a<-info(mz,iv,npoint); mzpt<-a[[1]]; tpos<-a[[2]]; mzind<-a[[3]]; mzrang<-a[[4]]; 
      icyc<-0; imet<--1; ranum<- 0; dfrow1=data.frame()
-     
      rts<-intab$RT*60.; mz0<-round(intab$mz0,1); mzcon<-round(intab$control,1)
 #  search for specified metabolites
  for(i in 1:nrow(intab)) {nm<-as.character(intab$Name[i]);
