@@ -24,9 +24,9 @@ list(nik="UGln",name="[U-C13]-Glutamine",pos="1,1,1,1,1",abund=100),
 list(nik="cold",name="Glucose",pos="0,0,0,0,0,0",abund=100)
 )
 
-inctime<-c(0,6,24)
+inctime<-c('_0',' 0',6,24,40)
 
-cells<-c("A549","NCI","BEAS2B","SW620")
+cells<-c("A549","NCI","BEAS2B","SW620","HUVEC")
 
      ldf<-list(); # data frame to write Ramid output in PhenoMeNal format
      ifi<-0;
@@ -41,10 +41,12 @@ cells<-c("A549","NCI","BEAS2B","SW620")
          
            for(tinc in inctime)  #check the file for incubation time
            if(grepl(paste(tinc,'H',sep=""),fi)|grepl(paste(tinc,'h',sep=""),fi)) break;
+           if(grepl('Cold',fi)) tinc<-'0'
            
            for(cel in cells) if(grepl(cel,fi)) break
            
            l<-regexpr("R[0-9]_", fi)+1
+           if(l==0) l<-regexpr(" [0-9]_", fi)+1
            if(l==0) l<-regexpr("C[0-9][ _][0-9]", fi)+3
            inj<-substr(fi,nchar(fi)-4,nchar(fi)-4)
            rep<-substr(fi,l,l)
